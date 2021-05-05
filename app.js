@@ -2,11 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql').graphqlHTTP;
 const { buildSchema } = require('graphql');
+const mongoose = require('mongoose');
+
+const Event = require('./model/event');
 
 require('dotenv/config');
 
 const app = express();
-const Events = [];
 
 app.use(bodyParser.json());
 app.use('/graphql', graphqlHttp({
@@ -41,19 +43,27 @@ app.use('/graphql', graphqlHttp({
     `),
     rootValue: {
         events: () => {
-            return Events;
-           
-        }, createEvent: (args) => {
-            const event = {
-                _id: Math.random().toString(),
-                title:args.eventInput.title,
-                description:args.eventInput.description,
-                date: args.eventInput.date,
-                price: +args.eventInput.price
-            };
-            Events.push(event);
-            return event;
+            const Data = Event.find();
+            return Data;
 
+        }, createEvent: (args) => {
+            const event = new Event({
+                title: args.eventInput.title,
+                description: args.eventInput.description,
+                price: args.eventInput.price,
+                date: new Date(args.eventInput.date)
+
+            });
+            return event
+                .save()
+                .then(result => {
+                    console.log(result);
+                    return { ...result._doc };
+                })
+                .catch(err => {
+                    console.log(err);
+                    throw err;
+                });
         }
 
     },
@@ -61,6 +71,10 @@ app.use('/graphql', graphqlHttp({
 })
 );
 
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => app.listen(process.env.PORT), console.log('connected to db'))
+    .catch(err => console.log(err));
 
-app.listen(process.env.PORT);
+
+
 
