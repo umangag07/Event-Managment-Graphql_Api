@@ -13,7 +13,7 @@ const BookingSchema  = new Schema(
             ref:'User'
         }
     },
-    {timestamps:true}
+    {timestamps:true} // adds created at and updated at entry automatically
 );
 
 module.exports = mongoose.model('Booking', BookingSchema);
