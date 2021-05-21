@@ -24,6 +24,7 @@ const events = async eventIds=>{
 const user = async userID=>{
     try {
         const user = await User.findById(userID);
+        console.log('hello user');
         return {
             ...user._doc,
             _id: user.id,
@@ -35,12 +36,10 @@ const user = async userID=>{
     }
 };
 
-const singleEvent = async eventId =>{
+const single_event = async eventId =>{
     // eslint-disable-next-line no-useless-catch
     try {
-        const event = await Event.findOne({_id:eventId});
-        console.log('jsndvnksddbvksb');
-        console.log(event);
+        const event = await Event.findById(eventId);
         return {
             ...event._doc,
             _id: event.id,
@@ -74,12 +73,11 @@ module.exports = {
         try {
             const bookings = await Booking.find();
             return bookings.map(booking => {
-                console.log(booking);
                 return {
                     ...booking._doc,
                     _id: booking.id,
                     user: user.bind(this, booking._doc.user),
-                    event: singleEvent(this, booking._doc.event),
+                    event: single_event.bind(this, booking.event),
                     createdAt: new Date(booking._doc.createdAt).toISOString(),
                     updatedAt: new Date(booking._doc.updatedAt).toISOString(),
                 };
@@ -158,7 +156,7 @@ module.exports = {
                 ...result._doc,
                 _id: result.id,
                 user: user.bind(this, result._doc.user),
-                event: singleEvent(this, result._doc.event),
+                event: single_event(this, result._doc.event),
                 createdAt: new Date(result._doc.createdAt).toISOString(),
                 updatedAt: new Date(result._doc.updatedAt).toISOString(),
             };
