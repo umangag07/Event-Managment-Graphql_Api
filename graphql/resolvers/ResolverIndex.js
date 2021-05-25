@@ -8,12 +8,7 @@ const events = async eventIds=>{
     try {
         const events = await Event.find({ _id: { $in: eventIds } });
         return events.map(event => {
-            return {
-                ...event._doc,
-                _id: event.id,
-                date: new Date(event.date).toISOString(),
-                creator: user.bind(this, event._doc.creator)
-            };
+            return Transform_event(event);
         });
     } catch (err) {
         throw err;
@@ -50,6 +45,15 @@ const single_event = async eventId =>{
     }
 };
 
+const Transform_event =  event =>{
+    return {
+        ...event._doc,
+        _id: event.id,
+        date: new Date(event.date).toISOString(),
+        creator: user.bind(this, event._doc.creator)
+    };
+};
+
 const salt = 12;
 
 module.exports = {
@@ -57,12 +61,7 @@ module.exports = {
         try {
             const events = await Event.find();
             return events.map(event => {
-                return {
-                    ...event._doc,
-                    _id: event.id,
-                    date: new Date(event.date).toISOString(),
-                    creator: user.bind(this, event._doc.creator)
-                };
+                return Transform_event(event);
             });
         } catch (err) {
             throw err;
@@ -101,10 +100,7 @@ module.exports = {
         try {
             const result_1 = await event
                 .save();
-            createdEvent = {
-                ...result_1._doc,
-                _id: result_1.id
-            };
+            createdEvent = Transform_event(result_1);
             console.log(result_1);
             const user = await User.findById('60941d63863d634278eb494d');
             if (!user) {
@@ -168,11 +164,7 @@ module.exports = {
     cancelBooking:async(args)=>{
         try{
             const booking = await Booking.findById(args.bookingId).populate('event');
-            const event = {
-                ...booking.event._doc,
-                _id:booking.event.id,
-                creator:user.bind(this,booking.event._doc.creator)
-            };   
+            const event = Transform_event(booking.event);
             await Booking.deleteOne({_id:args.bookingId});
             return event;
         }catch(err){
