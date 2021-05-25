@@ -19,7 +19,6 @@ const events = async eventIds=>{
 const user = async userID=>{
     try {
         const user = await User.findById(userID);
-        console.log('hello user');
         return {
             ...user._doc,
             _id: user.id,
@@ -152,7 +151,7 @@ module.exports = {
                 ...result._doc,
                 _id: result.id,
                 user: user.bind(this, result._doc.user),
-                event: single_event(this, result._doc.event),
+                event: single_event.bind(this, result._doc.event),
                 createdAt: new Date(result._doc.createdAt).toISOString(),
                 updatedAt: new Date(result._doc.updatedAt).toISOString(),
             };
