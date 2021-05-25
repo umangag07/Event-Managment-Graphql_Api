@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql').graphqlHTTP;
 const mongoose = require('mongoose');
 const graphqlSchema = require('./graphql/schema/SchemaIndex');
-const graphqlResolver = require('./graphql/resolvers/ResolverIndex');
+const graphqlResolver = require('./graphql/resolvers/Resolver_Index');
 
 require('dotenv/config');
 const app = express();
